@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.product.api.dto.ApiResponse;
 import com.product.api.entity.Category;
 import com.product.api.service.SvcCategory;
+import com.product.exception.ApiException;
 
 import java.util.List;
 
@@ -37,30 +39,31 @@ public class CtrlCategory {
     }
 
     @PostMapping
-    public ResponseEntity<String> createCategory( @RequestBody Category category, BindingResult bindingResult) {
-        String message = "";
+    public ResponseEntity<ApiResponse> createCategory(@Valid @RequestBody Category category,
+            BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            message = bindingResult.getAllErrors().get(0).getDefaultMessage();
-            return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+            throw new ApiException(HttpStatus.BAD_REQUEST, bindingResult.getAllErrors().get(0).getDefaultMessage());
         }
-        return new ResponseEntity<>(svc.createCategory(category), HttpStatus.OK);
+        ApiResponse response = svc.createCategory(category);
+        return new ResponseEntity<>(response, response.getStatus());
     }
 
     @PutMapping("/{category_id}")
-    public ResponseEntity<String> updateCategory(@PathVariable int category_id,@RequestBody Category category,
+    public ResponseEntity<ApiResponse> updateCategory(@PathVariable int category_id,
+            @Valid @RequestBody Category category,
             BindingResult bindingResult) {
-        String message = "";
-        if (bindingResult.hasErrors()) {
-            message = bindingResult.getAllErrors().get(0).getDefaultMessage();
-            return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
-        }
 
-        return new ResponseEntity<>(svc.updateCategory(category_id, category), HttpStatus.OK);
+        if (bindingResult.hasErrors()) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, bindingResult.getAllErrors().get(0).getDefaultMessage());
+        }
+        ApiResponse response = svc.updateCategory(category_id, category);
+        return new ResponseEntity<>(response, response.getStatus());
     }
 
     @DeleteMapping("/{category_id}")
-    public ResponseEntity<String> deleteCategory(@PathVariable int category_id) {
-        return new ResponseEntity<>(svc.deleteCategory(category_id), HttpStatus.OK);
+    public ResponseEntity<ApiResponse> deleteCategory(@PathVariable int category_id) {
+        ApiResponse response = svc.deleteCategory(category_id);
+        return new ResponseEntity<>(response, response.getStatus());
     }
 
 }

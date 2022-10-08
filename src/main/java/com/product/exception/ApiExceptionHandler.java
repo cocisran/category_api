@@ -23,7 +23,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         response.setMessage(exception.getMessage());
         response.setPath(((ServletWebRequest) request).getRequest().getRequestURI().toString());
 
-        return new ResponseEntity<>(response, null);
+        return new ResponseEntity<>(response, response.getError());
     }
 
 }

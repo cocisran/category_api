@@ -13,3 +13,9 @@
 ```Bash
 $ git checkout <commit | tag>
 ```
+
+### Consideraciones sobre la base de datos
+
+El proyecto ha sido desarrollado utilizando una base de datos manejada por  **postgresql**, por lo cual es importante si este no es su manejador de bases de datos, realizar ciertas  modificaciones dentro de [aplication.properties](src/main/resources/application.properties) antes de lanzar el proyecto, y agregar las dependecias necesarias en [pom.xml](pom.xml) para el sistema manejador de bases de datos que use. 
+
+

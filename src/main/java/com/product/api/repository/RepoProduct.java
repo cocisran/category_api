@@ -27,7 +27,7 @@ public interface RepoProduct extends JpaRepository<Product, Integer>{
 	@Modifying
 	@Transactional
 	@Query(value ="INSERT INTO product (gtin, product, description, price, stock, status, category_id) "
-					+ "VALUES (:gtin, :product, :description, :price, :stock, :status, :category_id)", nativeQuery = true)
+					+ "VALUES (:gtin, :product, :description, :price, :stock, 1, :category_id)", nativeQuery = true)
 	void createProduct(
 			@Param("gtin") String gtin, 
 			@Param("product") String product, 

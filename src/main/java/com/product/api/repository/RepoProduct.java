@@ -16,7 +16,27 @@ public interface RepoProduct extends JpaRepository<Product, Integer>{
 	// 3. Implementar la firma de un método que permita consultar un producto por su código GTIN y con estatus 1
 	@Query(value =  "SELECT * FROM product WHERE gtin = :gtin AND status = 1", nativeQuery =  true)
 	Product getProductByGTIN(@Param("gtin") String gtin_code);
-	
+
+	@Query(value =  "SELECT * FROM product WHERE gtin = :gtin", nativeQuery =  true)
+	Product getAllProductByGTIN(@Param("gtin") String gtin_code);
+
+	@Query(value =  "SELECT * FROM product WHERE product = :product_name", nativeQuery =  true)
+	Product getProductByName(@Param("product_name") String product_name);
+
+
+	@Modifying
+	@Transactional
+	@Query(value ="INSERT INTO product (gtin, product, description, price, stock, status, category_id) "
+					+ "VALUES (:gtin, :product, :description, :price, :stock, :status, :category_id)", nativeQuery = true)
+	void createProduct(
+			@Param("gtin") String gtin, 
+			@Param("product") String product, 
+			@Param("description") String description, 
+			@Param("price") Double price, 
+			@Param("stock") Integer stock,
+			@Param("category_id") Integer category_id
+		);
+
 	@Modifying
 	@Transactional
 	@Query(value ="UPDATE product "

@@ -2,7 +2,6 @@ package com.product.api.service;
 
 import java.sql.SQLIntegrityConstraintViolationException;
 
-import javax.validation.constraints.Null;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -36,17 +35,11 @@ public class SvcProductImp implements SvcProduct {
 			throw new ApiException(HttpStatus.NOT_FOUND, "product does not exist");
 	}
 
-	/*
-	 * 4. Implementar el método createProduct considerando las siguientes
-	 * validaciones:
-	 * 
-	 * 
-	 * 3.
-	 */
+	//Implementar el método createProduct considerando las siguientes
+
 	@Override
 	public ApiResponse createProduct(Product in) {
-		Category product_category = in.getCategory();
-		Category db_category = repoCategory.findByCategoryId(product_category.getID());
+		Category db_category = repoCategory.findByCategoryId(in.getCategory_id());
 
 		// 1. validar que la categoría del nuevo producto exista
 		if (db_category == null)

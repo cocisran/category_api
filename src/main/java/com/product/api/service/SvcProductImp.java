@@ -1,7 +1,8 @@
 package com.product.api.service;
 
 import java.sql.SQLIntegrityConstraintViolationException;
-
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.product.api.dto.ApiResponse;
 import com.product.api.entity.Category;
 import com.product.api.entity.Product;
+import com.product.api.entity.SimpleProduct;
 import com.product.api.repository.RepoCategory;
 import com.product.api.repository.RepoProduct;
 import com.product.exception.ApiException;
@@ -26,8 +28,7 @@ public class SvcProductImp implements SvcProduct {
 
 	@Override
 	public Product getProduct(String gtin) {
-		Product product = repo.getProductByGTIN(gtin); // sustituir null por la llamada al método implementado en el
-														// repositorio
+		Product product = repo.getProductByGTIN(gtin);
 		if (product != null) {
 			product.setCategory(repoCategory.findByCategoryId(product.getCategory_id()));
 			return product;
@@ -35,46 +36,46 @@ public class SvcProductImp implements SvcProduct {
 			throw new ApiException(HttpStatus.NOT_FOUND, "product does not exist");
 	}
 
-	//Implementar el método createProduct considerando las siguientes
+	@Override
+	public List<SimpleProduct> getListProductsByCategory(Integer category_id) {
+
+		Category product_category = repoCategory.findByCategoryId(category_id);
+		if (product_category == null)
+			throw new ApiException(HttpStatus.NOT_FOUND, "category not found");
+		
+		List<Product> productos = repo.getProductsByCategoryID(category_id);
+		
+		return makeItSimple(productos);
+	}
 
 	@Override
 	public ApiResponse createProduct(Product in) {
 		Category db_category = repoCategory.findByCategoryId(in.getCategory_id());
 
-		// 1. validar que la categoría del nuevo producto exista
 		if (db_category == null)
 			throw new ApiException(HttpStatus.NOT_FOUND, "category not found");
 
-		// 2.1 el código GTIN es unico
 		Product db_product_instance = repo.getAllProductByGTIN(in.getGtin());
 		if (db_product_instance != null) {
 			if (db_product_instance.getStatus() == 1)
 				throw new ApiException(HttpStatus.BAD_REQUEST, "product gtin already exist");
 
-			/*
-			 * si al intentar realizar un nuevo registro ya existe un producto con el mismo
-			 * GTIN pero tiene estatus 0,
-			 * entonces se debe cambiar el estatus del producto existente a 1 y actualizar
-			 * sus datos con los del nuevo registro
-			 */
 			in.setStatus(1);
 			ApiResponse update_response = updateProduct(in, in.getProduct_id());
 			return new ApiResponse("product activated", update_response.getStatus());
 		}
 
-		// 2.2 el nombre del producto son únicos
 		db_product_instance = repo.getProductByName(in.getProduct());
 		if (db_product_instance != null)
 			throw new ApiException(HttpStatus.BAD_REQUEST, "product name already exist");
 
-		// create category
-		repo.createProduct(in.getGtin(), 
-							in.getProduct(), 
-							in.getDescription(), 
-							in.getPrice(),
-							in.getStock(), 
-							in.getCategory_id());
-		return new ApiResponse("product created",HttpStatus.OK);
+		repo.createProduct(in.getGtin(),
+				in.getProduct(),
+				in.getDescription(),
+				in.getPrice(),
+				in.getStock(),
+				in.getCategory_id());
+		return new ApiResponse("product created", HttpStatus.OK);
 	}
 
 	@Override
@@ -113,5 +114,14 @@ public class SvcProductImp implements SvcProduct {
 
 		repo.updateProductStock(gtin, product.getStock() - stock);
 		return new ApiResponse("product stock updated", HttpStatus.OK);
+	}
+
+
+	private List<SimpleProduct> makeItSimple(List<Product> products){
+		ArrayList<SimpleProduct> productos_simples = new ArrayList<SimpleProduct>();
+		for (Product p : products) {
+			productos_simples.add(new SimpleProduct(p));
+		}
+		return productos_simples;
 	}
 }

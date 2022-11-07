@@ -1,5 +1,7 @@
 package com.product.api.controller;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.product.api.dto.ApiResponse;
 import com.product.api.entity.Product;
+import com.product.api.entity.SimpleProduct;
 import com.product.api.service.SvcProduct;
 import com.product.exception.ApiException;
 
@@ -27,10 +30,14 @@ public class CtrlProduct {
 	@Autowired
 	SvcProduct svc;
 
-	// 1. Implementar método getProduct
 	@GetMapping("/{gtin}")
 	public ResponseEntity<Product> getProduct(@PathVariable("gtin") String gtin) {
 		return new ResponseEntity<>(svc.getProduct(gtin), HttpStatus.OK);
+	}
+
+	@GetMapping("category/{category_id}")
+	public ResponseEntity<List<SimpleProduct>> getListProductsByCategory(@PathVariable("category_id") Integer category_id) {
+		return new ResponseEntity<>(svc.getListProductsByCategory(category_id), HttpStatus.OK);
 	}
 
 	@PostMapping
@@ -48,7 +55,6 @@ public class CtrlProduct {
 		return new ResponseEntity<>(svc.updateProduct(in, id), HttpStatus.OK);
 	}
 
-	// 2. Implementar método updateProductStock
 	@PutMapping("/{gtin}/stock/{stock}")
 	public ResponseEntity<ApiResponse> updateProductStock(@PathVariable("gtin") String gtin,
 			@PathVariable("stock") Integer stock) {

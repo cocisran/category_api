@@ -18,6 +18,8 @@ public interface SvcProduct {
 
 	public ApiResponse updateProductStock(String gtin, Integer stock);
 
+	public ApiResponse updateProductCategory(String gtin, Integer category_id);
+
 	public ApiResponse deleteProduct(Integer id);
 
 }

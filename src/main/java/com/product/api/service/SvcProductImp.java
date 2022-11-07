@@ -42,9 +42,9 @@ public class SvcProductImp implements SvcProduct {
 		Category product_category = repoCategory.findByCategoryId(category_id);
 		if (product_category == null)
 			throw new ApiException(HttpStatus.NOT_FOUND, "category not found");
-		
+
 		List<Product> productos = repo.getProductsByCategoryID(category_id);
-		
+
 		return makeItSimple(productos);
 	}
 
@@ -116,8 +116,22 @@ public class SvcProductImp implements SvcProduct {
 		return new ApiResponse("product stock updated", HttpStatus.OK);
 	}
 
+	@Override
+	public ApiResponse updateProductCategory(String gtin, Integer category_id) {
 
-	private List<SimpleProduct> makeItSimple(List<Product> products){
+		Category new_category = repoCategory.findByCategoryId(category_id);
+		if (new_category == null)
+			throw new ApiException(HttpStatus.NOT_FOUND, "category not found");
+
+		Product producto = repo.getProductByGTIN(gtin);
+		if (producto == null)
+			throw new ApiException(HttpStatus.NOT_FOUND, "product does not exist");
+
+		repo.updateProductCategory(gtin, category_id);
+		return new ApiResponse("product category updated", HttpStatus.OK);
+	}
+
+	private List<SimpleProduct> makeItSimple(List<Product> products) {
 		ArrayList<SimpleProduct> productos_simples = new ArrayList<SimpleProduct>();
 		for (Product p : products) {
 			productos_simples.add(new SimpleProduct(p));

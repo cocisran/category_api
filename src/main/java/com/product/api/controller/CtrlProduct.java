@@ -36,7 +36,8 @@ public class CtrlProduct {
 	}
 
 	@GetMapping("category/{category_id}")
-	public ResponseEntity<List<SimpleProduct>> getListProductsByCategory(@PathVariable("category_id") Integer category_id) {
+	public ResponseEntity<List<SimpleProduct>> getListProductsByCategory(
+			@PathVariable("category_id") Integer category_id) {
 		return new ResponseEntity<>(svc.getListProductsByCategory(category_id), HttpStatus.OK);
 	}
 
@@ -59,6 +60,13 @@ public class CtrlProduct {
 	public ResponseEntity<ApiResponse> updateProductStock(@PathVariable("gtin") String gtin,
 			@PathVariable("stock") Integer stock) {
 		ApiResponse response = svc.updateProductStock(gtin, stock);
+		return new ResponseEntity<ApiResponse>(response, response.getStatus());
+	}
+
+	@PutMapping("/{gtin}/category")
+	public ResponseEntity<ApiResponse> updateProductCategory(@PathVariable("gtin") String gtin,
+			@Valid @RequestBody Integer category_id) {
+		ApiResponse response = svc.updateProductCategory(gtin, category_id);
 		return new ResponseEntity<ApiResponse>(response, response.getStatus());
 	}
 

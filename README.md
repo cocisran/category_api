@@ -4,8 +4,9 @@
 
 ### Historial de commits para la implementación
 
-| commit | tag |
-|---|---|
+| commit | tag | práctica|
+|---|---|---|
+|16d7681cae37afd9ab34e40cae091b2cb8b75ff1| PList_UPCategory|
 |7e70efb5ba03e70ad200ab91e6d460a20bc6b87f| CRUD_Producto|
 |dd5a40352197f79ab92cc6ea2884d85bc7a4b932| manejo_excepciones|
 
